@@ -1,15 +1,16 @@
-from config import Config
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
-# init SQLAlchemy so we can use it later in our models
+# Globally accessible libraries
 db = SQLAlchemy()
 
 def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
+    # Initialize the core application
+    app = Flask(__name__, instance_relative_config=False)
+    app.config.from_object('config.Config')
 
+    # Initialize Plugins
     db.init_app(app)
 
     login_manager = LoginManager()
@@ -23,12 +24,13 @@ def create_app():
         # since the user_id is just the primary key of our user table, use it in the query for the user
         return User.query.get(int(user_id))
 
-    # blueprint for auth routes in our app
-    from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint)
+    with app.app_context():
+        # Import parts of our application   
+        from .auth import auth as auth_bp
+        from .home import home as home_bp
 
-    # blueprint for non-auth parts of app
-    from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
+        # Register Blueprints
+        app.register_blueprint(auth_bp)
+        app.register_blueprint(home_bp)
 
-    return app
+        return app
