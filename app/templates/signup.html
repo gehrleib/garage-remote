@@ -7,31 +7,59 @@
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="notification is-danger">
-            {{ messages[0] }}. <br> Go to <a href="{{ url_for('auth.login') }}">login page</a>.
+            {{ messages[0] }}
         </div>
         {% endif %}
         {% endwith %}
         <form method="POST" action="/signup">
+            {{ form.csrf_token }}
+
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" type="email" name="email" placeholder="Email" autofocus="" required>
+                    {{ form.name(class_='input is-large', placeholder='John Smith', autofocus='') }}
+                    {% if form.email.errors %}
+                    <p class="help">{% for error in form.name.errors %}{{ error }}{% endfor %}</p>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" type="text" name="name" placeholder="Name" autofocus="" required>
+                    {{ form.email(class_='input is-large', placeholder='youremail@example.com', autofocus='') }}
+                    {% if form.email.errors %}
+                    <p class="help">{% for error in form.email.errors %}{{ error }}{% endfor %}</p>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" type="password" name="password" placeholder="Password" required>
+                    {{ form.password(class_='input is-large', placeholder='Password') }}
+                    {% if form.email.errors %}
+                    <p class="help">{% for error in form.password.errors %}{{ error }}{% endfor %}</p>
+                    {% endif %}
                 </div>
             </div>
 
-            <button class="button is-block is-info is-large is-fullwidth">Sign Up</button>
+            <div class="field">
+                <div class="control">
+                    {{ form.confirm(class_='input is-large', placeholder='Confirm Password') }}
+                    {% if form.email.errors %}
+                    <p class="help">{% for error in form.confirm.errors %}{{ error }}{% endfor %}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                {{ form.submit(class_='button is-block is-info is-large is-fullwidth') }}
+            </div>
+
+            <div style="padding-top:10px">
+                <span class="is-size-7">Already have an account? <a href="{{ url_for('auth.login') }}">Log
+                        in.</a></span>
+            </div>
         </form>
+
     </div>
 </div>
 {% endblock %}

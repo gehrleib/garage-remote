@@ -5,7 +5,7 @@
 <h1 class="title">Welcome, {{ name }}!</h1>
 <h1 class="subtitle">The garage is... {{ status }}.</h1>
 -->
-<a href="{{ url_for('home.toggle') }}">
+<a href="{{ url_for('main.toggle') }}">
     <img src=" {{ url_for('static', filename='img/') }}Garage{{ status }}.png" width=295px height=295px />
 </a>
 {% endblock %}

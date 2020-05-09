@@ -1,60 +1,72 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_user, logout_user, login_required
-from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
-from . import db
+from flask import Blueprint, redirect, render_template, flash, request, session, url_for
+from flask_login import login_required, logout_user, current_user, login_user
+from .forms import LoginForm, SignupForm
+from .models import db, User
+from . import login_manager
 
 auth = Blueprint('auth', __name__)
 
-@auth.route('/login')
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    """
+    Log-in page for registered users.
 
-@auth.route('/login', methods=['POST'])
-def login_post():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    remember = True if request.form.get('remember') else False
+    GET: Serve Log-in page.
+    POST: Validate form and redirect user to dashboard.
+    """
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))  # Bypass if user is logged in
 
-    user = User.query.filter_by(email=email).first()
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()  # Validate Login Attempt
+        if user and user.check_password(password=form.password.data):
+            remember = True if request.form.get('remember') else False
+            login_user(user, remember=remember)
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('main.dashboard'))
+        flash('Invalid username/password combination')
+        return redirect(url_for('auth.login'))
+    return render_template('login.html', form=form)
 
-    # check if user actually exists
-    # take the user supplied password, hash it, and compare it to the hashed password in database
-    if not user or not check_password_hash(user.password_hash, password):
-        flash('Please check your login details and try again.')
-        return redirect(url_for('auth.login')) # if user doesn't exist or password is wrong, reload the page
-
-    # if the above check passes, then we know the user has the right credentials
-    login_user(user, remember=remember)
-    return redirect(url_for('home.index'))
-
-@auth.route('/signup')
+@auth.route('/signup', methods=['GET', 'POST'])
 def signup():
-    return render_template('signup.html')
+    """
+    Sign-up form to create new user accounts.
 
-@auth.route('/signup', methods=['POST'])
-def signup_post():
-    email = request.form.get('email')
-    name = request.form.get('name')
-    password = request.form.get('password')
-
-    user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
-
-    if user: # if a user is found, we want to redirect back to signup page so user can try again
-        flash('Email address already exists')
-        return redirect(url_for('auth.signup'))
-
-    # create new user with the form data. Hash the password so plaintext version isn't saved.
-    new_user = User(email=email, name=name, password_hash=generate_password_hash(password, method='sha256'))
-
-    # add the new user to the database
-    db.session.add(new_user)
-    db.session.commit()
-
-    return redirect(url_for('auth.login'))
+    GET: Serve sign-up page.
+    POST: Validate form, create account, redirect user to dashboard.
+    """
+    form = SignupForm()
+    if form.validate_on_submit():
+        existing_user = User.query.filter_by(email=form.email.data).first()
+        if existing_user is None:
+            user = User(name=form.name.data,
+                        email=form.email.data)
+            user.set_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()  # Create new user
+            login_user(user)  # Log in as newly created user
+            return redirect(url_for('main.dashboard'))
+        flash('A user with that email address already exists.')
+    return render_template('signup.html', form=form)
 
 @auth.route('/logout')
 @login_required
 def logout():
+    """User log-out logic."""
     logout_user()
-    return redirect(url_for('home.index'))
+    return redirect(url_for('auth.login'))
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Check if user is logged-in on every page load."""
+    if user_id is not None:
+        return User.query.get(user_id)
+    return None
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    """Redirect unauthorized users to Login page."""
+    flash('You must be logged in to view that page.')
+    return redirect(url_for('auth.login'))

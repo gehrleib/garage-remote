@@ -1,5 +1,7 @@
 #Visual Studio Code files
 .vscode
+log.txt
+*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
