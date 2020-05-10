@@ -68,3 +68,16 @@ def handle_door_click():
     relay.pulse(garage, duration=2.5)
     DOOR_STATUS = 'Open' if DOOR_STATUS == 'Closed' else 'Closed'
     return dashboard()
+
+@main.route('/cam')
+def handle_camera_click():
+    """Get snapshot from camera"""
+    if has_camera:
+        filename = 'camera.png'
+        folder = 'static/'
+        camera.capture(folder+filename)
+        message = ''
+    else:
+        message = 'Default image'
+
+    return message

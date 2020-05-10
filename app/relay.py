@@ -1,6 +1,9 @@
 from time import sleep
 import RPi.GPIO as GPIO
 
+GPIO.setmode(GPIO.BOARD)  # the pin numbers refer to the board connector not the chip
+GPIO.setwarnings(False)
+
 class Relay(object):
     """Relay class provides methods to operate a relay module
     which is attached to the RasperryPi GPIO pins
