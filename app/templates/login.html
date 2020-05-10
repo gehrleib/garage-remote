@@ -42,6 +42,11 @@
             <div>
                 {{ form.submit(class_='button is-block is-info is-large is-fullwidth') }}
             </div>
+
+            <div style="padding-top:10px">
+                <span class="is-size-7">Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign
+                        up.</a></span>
+            </div>
         </form>
     </div>
 </div>
