@@ -1,3 +1,4 @@
+"""Logged-in page routes."""
 from flask import Blueprint, current_app, redirect, render_template, url_for
 from flask_login import login_required, current_user
 from app import camera, relay

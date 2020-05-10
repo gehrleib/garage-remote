@@ -1,23 +1,22 @@
+"""Initialize app."""
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 import platform
 import subprocess
 
-# Globally accessible libraries
+# Global Variables
 db = SQLAlchemy()
 login_manager = LoginManager()
 camera = None
 relay = None
 
 def create_app():
-    # Initialize the core application
+    """Construct the core app object."""
     app = Flask(__name__, instance_relative_config=False)
-
-    # Application Configurations
     app.config.from_object('config.Config')
 
-    # Initalize platform
+    # Identify Platform
     system = {0: 'PC', 1: 'RASPBERRY'}
 
     is_raspberry = 'arm' in platform.machine().lower()
@@ -25,7 +24,7 @@ def create_app():
     if is_raspberry:
         import app.relay as relay
 
-        # Detect camera
+        # Detect Camera
         cam = subprocess.check_output('vcgencmd get_camera', shell=True)
         has_camera = int(cam.split()[1][-1])
 
@@ -49,11 +48,11 @@ def create_app():
             print(' * No camera module attached')
     print('\n')
 
-    # Initialize relay and pins
+    # Initialize Relay
     global relay
     relay = relay.Relay(app.config['PINS'])
 
-    # Initialize camera
+    # Initialize Camera
     global camera
     camera = camera.PiCamera()
     camera.resolution = (499, 443)
@@ -70,7 +69,7 @@ def create_app():
         app.register_blueprint(auth_bp)
         app.register_blueprint(main_bp)
 
-        # Create database models
+        # Create Database Models
         db.create_all()
 
         return app

@@ -8,7 +8,7 @@ load_dotenv(path.join(basedir, '.env'))
 class Config(object):
     """Set Flask configuration from environment variables."""
 
-    FLASK_APP = 'wsgi.py'
+    FLASK_APP = 'wsgi'
     FLASK_ENV = environ.get('FLASK_ENV')
     SECRET_KEY = environ.get('SECRET_KEY')
 
