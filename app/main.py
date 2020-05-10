@@ -10,14 +10,14 @@ system = {0: 'PC', 1: 'RASPBERRY'}
 is_raspberry = 'arm' in platform.machine().lower()
 
 if is_raspberry:
-    from . import dummy_relay as relay
+    from . import relay as relay
 
     #detect camera
     cam = subprocess.check_output('vcgencmd get_camera', shell=True)
     has_camera = int(cam.split()[1][-1])
 
     if has_camera:
-        from . import dummy_camera as picamera
+        from . import camera as picamera
     else:
         from . import dummy_camera as picamera
 else:
