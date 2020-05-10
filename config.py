@@ -10,7 +10,6 @@ class Config(object):
     SECRET_KEY = "supersecret"
 
     # Database
-    SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL') or \
-        'sqlite:///' + path.join(basedir, 'garage-remote.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(basedir, 'garage-remote.db')
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
