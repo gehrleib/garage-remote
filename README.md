@@ -11,7 +11,7 @@ A web site can be launched to offer one button  which interact with the server. 
 On a fresh install of Raspbian Lite:
 
 ```
-sudo apt update && upgrade
+sudo apt update
 sudo apt install git python-pip
 sudo python -m pip install flask flask-login flask-sqlalchemy flask-wtf email_validator
 sudo git clone https://github.com/gehrleib/garage-remote
