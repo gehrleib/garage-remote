@@ -20,7 +20,5 @@ def handle_door_click():
 @main.route('/cam')
 def handle_camera_click():
     """Get snapshot from camera"""
-    filename = 'camera.png'
-    folder = 'static/'
-    camera.capture(folder+filename)
+    camera.capture('static/camera.png')
     return

@@ -46,7 +46,7 @@ def signup():
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()  # Create new user
-            login_user(user)  # Log in as newly created user
+            login_user(user, remember=True)  # Log in as newly created user
             return redirect(url_for('main.dashboard'))
         flash('A user with that email address already exists.')
     return render_template('signup.html', form=form)
