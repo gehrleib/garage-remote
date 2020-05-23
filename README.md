@@ -12,6 +12,7 @@ On a fresh install of Raspbian Lite:
 
 ```
 sudo apt update
+sudo apt full-upgrade
 sudo apt install git python-pip
 sudo python -m pip install flask flask-login flask-sqlalchemy flask-wtf email_validator
 sudo git clone https://github.com/gehrleib/garage-remote.git
